@@ -1,0 +1,12 @@
+[build]
+  command = "npm install"
+  functions = "netlify/functions"
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/trader-os-v2-netlify.html"
+  status = 200
+
+[functions."send-telegram"]
+  external_auth_secret = "TELEGRAM_BOT_TOKEN"

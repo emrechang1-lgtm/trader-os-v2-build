@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADER OS v2 - Disiplin Panosu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark-bg: #0f1419;
+            --card-bg: #1a1f2e;
+            --accent-green: #00d084;
+            --accent-red: #ff4444;
+            --accent-yellow: #ffa500;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --border: #2a2f3f;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .connection-status.connected {
+            background: rgba(0, 208, 132, 0.2);
+            color: var(--accent-green);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-green);
+            border-bottom-color: var(--accent-green);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent-green);
+        }
+
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tracker-item {
+            background: rgba(0,208,132,0.05);
+            border: 1px solid var(--accent-green);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .tracker-item.danger {
+            background: rgba(255,68,68,0.05);
+            border-color: var(--accent-red);
+        }
+
+        .tracker-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tracker-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .tracker-item.danger .tracker-value {
+            color: var(--accent-red);
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input,
+        .input-group select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            background: rgba(0,208,132,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            min-height: 60px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-green);
+            color: var(--dark-bg);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-telegram {
+            background: rgba(0, 136, 204, 0.2);
+            color: #0088cc;
+            border: 1px solid #0088cc;
+        }
+
+        .btn-telegram:hover:not(:disabled) {
+            background: rgba(0, 136, 204, 0.3);
+        }
+
+        .btn-telegram:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .trades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .trade-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 13px;
+        }
+
+        .trade-item.profit {
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .trade-item.loss {
+            border-left: 3px solid var(--accent-red);
+        }
+
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .trade-pnl {
+            font-weight: 600;
+        }
+
+        .trade-pnl.profit {
+            color: var(--accent-green);
+        }
+
+        .trade-pnl.loss {
+            color: var(--accent-red);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: rgba(0,208,132,0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .alert-warning {
+            background: rgba(255,165,0,0.1);
+            border: 1px solid var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .alert-error {
+            background: rgba(255,68,68,0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--accent-green);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 6px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .tracker-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 TRADER OS v2</h1>
+            <p class="header-subtitle">Disiplin Panosu • Londra Seansı • XAUUSD Scalping</p>
+            <div class="connection-status connected">
+                📱 Telegram Bot (Netlify) • Local Storage Aktif
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tracker')">📊 Günlük Takip</button>
+            <button class="tab-btn" onclick="switchTab('checklist')">✓ İşe Başlama</button>
+            <button class="tab-btn" onclick="switchTab('session')">💹 Oturum</button>
+            <button class="tab-btn" onclick="switchTab('checkpoint')">🧠 Psikoloji</button>
+        </div>
+
+        <!-- TAB 1: GÜNLÜK TAKIP -->
+        <div id="tracker" class="tab-content active">
+            <div class="alert alert-success">
+                <strong>📍 Bugünün Hedefi:</strong> 60$ kar yap • Oturum kapat • Çık ve git
+            </div>
+
+            <div id="statusMessages"></div>
+
+            <div class="tracker-grid">
+                <div class="tracker-item">
+                    <div class="tracker-label">Günlük Kar</div>
+                    <div class="tracker-value" id="dailyPnl">$0</div>
+                    <div class="tracker-status">Hedef: $60</div>
+                </div>
+                <div class="tracker-item">
+                    <div class="tracker-label">İşlem Sayısı</div>
+                    <div class="tracker-value" id="tradeCount">0</div>
+                    <div class="tracker-status">Kaydedilen</div>
+                </div>
+                <div class="tracker-item" id="stopStatus">
+                    <div class="tracker-label">Günlük Stop</div>
+                    <div class="tracker-value" id="stopLabel">GÜVENLI</div>
+                    <div class="tracker-status">$100 limiti</div>
+                </div>
+                <div class="tracker-item">
+                    <div class="tracker-label">Telegram</div>
+                    <div class="tracker-value" id="telegramStatus">✓</div>
+                    <div class="tracker-status">Bağlı</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">➕ İşlem Ekle</div>
+                <div class="input-section">
+                    <div class="input-group">
+                        <label>Giriş Saati</label>
+                        <input type="time" id="entryTime" value="">
+                    </div>
+                    <div class="input-group">
+                        <label>Lot Boyutu</label>
+                        <select id="lotSize">
+                            <option value="0.01">0.01</option>
+                            <option value="0.02" selected>0.02</option>
+                            <option value="0.05">0.05</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Pip Kazancı/Kaybı</label>
+                        <input type="number" id="pips" placeholder="ör: 8 veya -5" value="">
+                    </div>
+                    <div class="input-group">
+                        <label>Kar/Zarar ($)</label>
+                        <input type="number" id="pnl" placeholder="ör: 16 veya -10" value="">
+                    </div>
+                </div>
+                <textarea id="tradeNotes" placeholder="Chart kurulumu? Sinyal? Neden?"></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="logTrade()">✓ İşlem Ekle</button>
+                    <button class="btn btn-secondary" onclick="resetForm()">Temizle</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📱 Telegram Log Gönder</div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 15px;">
+                    Bugünün özeti @cantrading202611bot'a gönder (Netlify Functions via secure API)
+                </p>
+                <button class="btn btn-telegram" id="telegramBtn" onclick="sendDailyLogToTelegram()">📲 Telegram'a Gönder</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Bugünün İşlemleri</div>
+                <div id="tradesList" class="trades-list">
+                    <p style="color: var(--text-secondary);">Henüz işlem kaydı yok</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: İŞE BAŞLAMA -->
+        <div id="checklist" class="tab-content">
+            <div class="alert alert-success">
+                <strong>⏰ Londra Açılmasından 15 dakika önce yap</strong>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💧 Fiziksel Hazırlık</div>
+                <div style="padding: 15px; background: rgba(0,208,132,0.1); border-radius: 4px;">
+                    <p style="margin-bottom: 10px; font-size: 14px;">✓ Su iç</p>
+                    <p style="margin-bottom: 10px; font-size: 14px;">✓ Nefes egzersizi (4-7-8)</p>
+                    <p style="font-size: 14px;">✓ Hafif esnetme</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🧠 Psikolojik Hazırlık</div>
+                <div style="padding: 15px; background: rgba(0,208,132,0.1); border-radius: 4px;">
+                    <p style="margin-bottom: 10px; font-size: 14px;">✓ Kuralları oku (Notion)</p>
+                    <p style="margin-bottom: 10px; font-size: 14px;">✓ Hedefi tekrarla: "$60 = Başarı"</p>
+                    <p style="font-size: 14px;">✓ Sakin mısın? Hazırsan başla</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: OTURUM -->
+        <div id="session" class="tab-content">
+            <div class="alert alert-warning">
+                <strong>⚠️ GİRİŞ KAPISI:</strong> Her pozisyon açmadan önce kontrol et
+            </div>
+
+            <div class="card">
+                <div class="card-title">🚪 Giriş Öncesi</div>
+                <div style="padding: 15px; background: rgba(255,165,0,0.1); border-radius: 4px; line-height: 2;">
+                    ☐ Chart onay (4H/1H/5M uyumlu)<br>
+                    ☐ Zihinsel durum (panik/aç gözlü yok)<br>
+                    ☐ Lot sabit (0.02)<br>
+                    ☐ Risk net ($100 stop'ı aklında)
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PSİKOLOJİ -->
+        <div id="checkpoint" class="tab-content">
+            <div class="alert alert-success">
+                <strong>🎯 $60 YAPTIĞINDAKİ PROTOKOL</strong>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🛑 HEMEN YAPACAKLARIN</div>
+                <div style="padding: 15px; background: rgba(255,165,0,0.1); border-radius: 4px; line-height: 2;">
+                    <strong>1.</strong> Tüm pozisyonları kapat<br>
+                    <strong>2.</strong> "BUGÜN BAŞARILI OLDUM" söyle<br>
+                    <strong>3.</strong> Screenshot al<br>
+                    <strong>4.</strong> Post-it: "BUGÜN BİTTİ ✓"<br>
+                    <strong>5.</strong> LAPTOPI KAPAT<br>
+                    <strong>6.</strong> Fiziksel faaliyet yap
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG
+        const CONFIG = {
+            chatId: '8235306697',
+            netlifyFunctionUrl: '/.netlify/functions/send-telegram'
+        };
+
+        // TRADES
+        let trades = JSON.parse(localStorage.getItem('trades')) || [];
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('statusMessages');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            statusDiv.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        async function logTrade() {
+            const entryTime = document.getElementById('entryTime').value || new Date().toLocaleTimeString();
+            const lot = document.getElementById('lotSize').value;
+            const pips = parseInt(document.getElementById('pips').value) || 0;
+            const pnl = parseFloat(document.getElementById('pnl').value) || 0;
+            const notes = document.getElementById('tradeNotes').value;
+
+            if (!pips || pnl === 0) {
+                showStatus('❌ Lütfen pip ve kar/zarar bilgisini gir', 'error');
+                return;
+            }
+
+            const trade = {
+                id: Date.now(),
+                entryTime,
+                lot,
+                pips,
+                pnl,
+                notes,
+                date: new Date().toLocaleDateString('tr-TR'),
+                timestamp: new Date().toISOString()
+            };
+
+            trades.push(trade);
+            localStorage.setItem('trades', JSON.stringify(trades));
+
+            updateDashboard();
+            resetForm();
+            showStatus('✅ İşlem kaydedildi', 'success');
+        }
+
+        function resetForm() {
+            document.getElementById('entryTime').value = '';
+            document.getElementById('pips').value = '';
+            document.getElementById('pnl').value = '';
+            document.getElementById('tradeNotes').value = '';
+        }
+
+        function updateDashboard() {
+            let totalPnL = 0;
+            trades.forEach(t => totalPnL += t.pnl);
+
+            document.getElementById('dailyPnl').textContent = '$' + totalPnL;
+            document.getElementById('tradeCount').textContent = trades.length;
+
+            const stopStatus = document.getElementById('stopStatus');
+            if (totalPnL <= -100) {
+                stopStatus.classList.add('danger');
+                document.getElementById('stopLabel').textContent = '❌ STOP';
+            } else if (totalPnL >= 60) {
+                stopStatus.classList.remove('danger');
+                document.getElementById('stopLabel').textContent = '✓ HEDEF';
+            } else {
+                stopStatus.classList.remove('danger');
+                document.getElementById('stopLabel').textContent = 'GÜVENLI';
+            }
+
+            const list = document.getElementById('tradesList');
+            if (trades.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-secondary);">Henüz işlem kaydı yok</p>';
+            } else {
+                list.innerHTML = trades.map((t, i) => `
+                    <div class="trade-item ${t.pnl >= 0 ? 'profit' : 'loss'}">
+                        <div class="trade-header">
+                            <span>#${i+1} • ${t.entryTime}</span>
+                            <span class="trade-pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl} (${t.pips} pip @ 0.${t.lot})</span>
+                        </div>
+                        ${t.notes ? `<div style="color:var(--text-secondary); font-size:12px;">${t.notes}</div>` : ''}
+                    </div>
+                `).reverse().join('');
+            }
+        }
+
+        async function sendDailyLogToTelegram() {
+            const btn = document.getElementById('telegramBtn');
+            btn.disabled = true;
+            btn.innerHTML = '📤 Gönderiliyor<span class="loading"></span>';
+
+            let totalPnL = 0;
+            let winTrades = 0;
+            let lossTrades = 0;
+
+            trades.forEach(t => {
+                totalPnL += t.pnl;
+                if (t.pnl > 0) winTrades++;
+                else if (t.pnl < 0) lossTrades++;
+            });
+
+            const today = new Date().toLocaleDateString('tr-TR');
+            const status = totalPnL >= 60 ? '✅ BAŞARILI' : (totalPnL >= 0 ? '⚠️ DEVAM' : '❌ ZARAR');
+
+            const message = `
+📊 TRADER OS Günlük Log
+━━━━━━━━━━━━━━━━━━━
+📅 Tarih: ${today}
+💰 Net Kar: $${totalPnL}
+📈 İşlem: ${trades.length}
+  ✅ Kazanç: ${winTrades}
+  ❌ Kayıp: ${lossTrades}
+🎯 Hedef: ${totalPnL >= 60 ? '✓ ULAŞILDI' : 'Devam...'}
+⏰ Status: ${status}
+━━━━━━━━━━━━━━━━━━━
+
+${trades.length > 0 ? '📝 İşlem Detayları:\n' + trades.map((t, i) => `${i+1}. ${t.pnl >= 0 ? '✅' : '❌'} ${t.pips} pip → $${t.pnl}`).join('\n') : 'Henüz işlem yok'}
+
+🔗 Dashboard: @cantrading202611bot
+            `;
+
+            try {
+                const response = await fetch(CONFIG.netlifyFunctionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        chatId: CONFIG.chatId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    showStatus('✅ Telegram\'a gönderildi! Mesaj ID: ' + data.messageId, 'success');
+                    btn.innerHTML = '📲 Gönderildi ✓';
+                    btn.style.background = 'rgba(0, 208, 132, 0.3)';
+                } else {
+                    showStatus('❌ Gönderme başarısız: ' + data.error, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '📲 Telegram\'a Gönder';
+                }
+            } catch (error) {
+                showStatus('❌ Hata: ' + error.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = '📲 Telegram\'a Gönder';
+            }
+        }
+
+        // INIT
+        updateDashboard();
+        document.getElementById('entryTime').value = new Date().toTimeString().slice(0, 5);
+    </script>
+</body>
+</html>
