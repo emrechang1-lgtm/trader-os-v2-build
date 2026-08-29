@@ -2,15 +2,11 @@
   "name": "trader-os-v2",
   "version": "2.0.0",
   "description": "TRADER OS - Disiplin Trading Dashboard with Telegram Integration",
-  "main": "trader-os-v2-netlify.html",
+  "main": "index.html",
   "scripts": {
-    "build": "echo 'Building...'",
+    "build": "echo 'Building TRADER OS v2...'",
     "start": "netlify dev"
   },
-  "dependencies": {
-    "node-fetch": "^2.6.7"
-  },
-  "devDependencies": {
-    "netlify-cli": "^14.0.0"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
