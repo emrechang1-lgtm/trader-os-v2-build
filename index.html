@@ -516,7 +516,8 @@
     </div>
 
     <script>
-        // CONFIG
+        // CONFIG - Bot token is stored securely in Netlify environment variables
+        // HTML only calls the Netlify Function which has access to it
         const CONFIG = {
             chatId: '8235306697',
             netlifyFunctionUrl: '/.netlify/functions/send-telegram'
