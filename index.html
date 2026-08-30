@@ -450,6 +450,9 @@
                 <div id="tradesList" class="trades-list">
                     <p style="color: var(--text-secondary);">Henüz işlem kaydı yok</p>
                 </div>
+                <div class="btn-group" style="margin-top: 15px;">
+                    <button class="btn btn-secondary" onclick="clearAllTrades()" style="background: rgba(255,68,68,0.1); border-color: var(--accent-red); color: var(--accent-red);">🗑️ TÜM İŞLEMLERİ SİL</button>
+                </div>
             </div>
         </div>
 
@@ -607,11 +610,32 @@
                     <div class="trade-item ${t.pnl >= 0 ? 'profit' : 'loss'}">
                         <div class="trade-header">
                             <span>#${i+1} • ${t.entryTime}</span>
-                            <span class="trade-pnl ${t.pnl >= 0 ? 'profit' : 'loss'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl} (${t.pips} pip @ 0.${t.lot})</span>
+                            <div>
+                                <span class="trade-pnl ${t.pnl >= 0 ? 'profit' : 'loss'}" style="margin-right: 10px;">${t.pnl >= 0 ? '+' : ''}$${t.pnl} (${t.pips} pip @ 0.${t.lot})</span>
+                                <button onclick="deleteTrade(${t.id})" style="padding: 2px 8px; background: rgba(255,68,68,0.2); border: 1px solid var(--accent-red); color: var(--accent-red); border-radius: 3px; cursor: pointer; font-size: 11px;">Sil</button>
+                            </div>
                         </div>
-                        ${t.notes ? `<div style="color:var(--text-secondary); font-size:12px;">${t.notes}</div>` : ''}
+                        ${t.notes ? `<div style="color:var(--text-secondary); font-size:12px; margin-top: 5px;">${t.notes}</div>` : ''}
                     </div>
                 `).reverse().join('');
+            }
+        }
+
+        function deleteTrade(tradeId) {
+            if (confirm('Bu işlemi silmek istediğinden emin misin?')) {
+                trades = trades.filter(t => t.id !== tradeId);
+                localStorage.setItem('trades', JSON.stringify(trades));
+                updateDashboard();
+                showStatus('✓ İşlem silindi', 'success');
+            }
+        }
+
+        function clearAllTrades() {
+            if (confirm('TÜM İŞLEMLERİ SİLMEK İSTEDİĞİNDEN EMİN MİSİN? (Geri alınamaz)')) {
+                trades = [];
+                localStorage.setItem('trades', JSON.stringify(trades));
+                updateDashboard();
+                showStatus('✓ Tüm işlemler silindi', 'success');
             }
         }
 
